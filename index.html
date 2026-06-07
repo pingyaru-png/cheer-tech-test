@@ -684,6 +684,12 @@ function textMatchesFilter(value, filter) {
   const raw = String(value || "").toLowerCase();
   return raw.includes(filter) || toHira(raw).includes(toHira(filter)) || kanaToRomaji(raw).includes(kanaToRomaji(filter));
 }
+function exactTextMatchesFilter(value, filter) {
+  if (!filter) return true;
+  const raw = String(value || "").trim().toLowerCase();
+  const f = String(filter || "").trim().toLowerCase();
+  return raw === f;
+}
 function filteredExpandedScoreRows() {
   const date = normalizedFilterValue("filterDate");
   const testName = normalizedFilterValue("filterTestName");
@@ -695,7 +701,7 @@ function filteredExpandedScoreRows() {
     if (!textMatchesFilter(r.test_name, testName)) return false;
     if (!textMatchesFilter(r.student, student)) return false;
     if (!textMatchesFilter(r.skill, skill)) return false;
-    if (!textMatchesFilter(r.rating, rating)) return false;
+    if (!exactTextMatchesFilter(r.rating, rating)) return false;
     return true;
   });
 }
