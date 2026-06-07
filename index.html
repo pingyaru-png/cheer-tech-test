@@ -209,7 +209,7 @@ const defaultData = {
 };
 let data = load();
 
-const ADMIN_CODE = "pp2026";
+const ADMIN_CODE = "labyrinth2026";
 function switchPanel(panelId) {
   closeAllMenus();
   document.querySelectorAll(".menu button").forEach(b => b.classList.remove("active"));
@@ -658,7 +658,16 @@ downloadAllMasters.addEventListener("click", () => {
   downloadCSV("technique_test_masters_v8.csv", rows);
 });
 resetAll.addEventListener("click", () => {
-  if(confirm("全データを初期状態に戻しますか？")) { localStorage.removeItem(LS_KEY); location.reload(); }
+  if (!confirm("全データを初期状態に戻しますか？\nこの操作は元に戻せません。")) return;
+  const code = prompt("全データ削除を実行するには、管理者パスコードを入力してください");
+  if (code === null) return;
+  if (code !== ADMIN_CODE) {
+    alert("管理者パスコードが違います。全データ削除を中止しました。");
+    return;
+  }
+  localStorage.removeItem(LS_KEY);
+  alert("全データを削除しました。初期状態に戻します。");
+  location.reload();
 });
 
 let commentPairsArr = [{part:"", contents:[]}];
