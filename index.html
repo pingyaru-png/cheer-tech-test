@@ -126,7 +126,7 @@
       </div>
 
       <div class="grid cols">
-        <div><label>生徒氏名 ★必須</label><div class="ac-wrap"><input id="studentInput" placeholder="例：は / h / haruka"><button class="drop-btn" data-target="studentInput">▼</button></div></div>
+        <div><label>生徒氏名 ★必須</label><div class="ac-wrap"><input id="studentInput" placeholder="例：と / t / touwa"><button class="drop-btn" data-target="studentInput">▼</button></div></div>
         <div><label>技名 ★必須</label><div class="ac-wrap"><input id="skillInput" placeholder="例：そ / s / sokuten"><button class="drop-btn" data-target="skillInput">▼</button></div></div>
         <div><label>評価 ★必須</label><div class="ac-wrap"><input id="ratingInput" placeholder="例：B+"><button class="drop-btn" data-target="ratingInput">▼</button></div><div class="quick-box" id="ratingQuickBox"></div></div>
         <div style="grid-column:1/-1">
@@ -150,6 +150,17 @@
 
     <div class="card wide">
       <h2>採点一覧</h2>
+      <div class="grid cols">
+        <div><label>日付で絞り込み</label><input id="filterDate" type="date"></div>
+        <div><label>テスト名で絞り込み</label><input id="filterTestName" placeholder="例：6月"></div>
+        <div><label>生徒氏名で絞り込み</label><div class="ac-wrap"><input id="filterStudent" placeholder="例：とうわ"><button class="drop-btn" data-target="filterStudent" type="button">▼</button></div></div>
+        <div><label>技名で絞り込み</label><div class="ac-wrap"><input id="filterSkill" placeholder="例：側転"><button class="drop-btn" data-target="filterSkill" type="button">▼</button></div></div>
+        <div><label>評価で絞り込み</label><div class="ac-wrap"><input id="filterRating" placeholder="例：B+"><button class="drop-btn" data-target="filterRating" type="button">▼</button></div></div>
+      </div>
+      <div class="toolbar">
+        <button class="btn secondary" id="clearScoreFilters" type="button">絞り込みクリア</button>
+      </div>
+      <p class="hint" id="scoreFilterCount">表示件数：0件</p>
       <table id="scoreTable"></table>
     </div>
   </section>
@@ -210,7 +221,7 @@ const defaultData = {
 };
 let data = load();
 
-const ADMIN_CODE = "labyrinth2026";
+const ADMIN_CODE = "2026";
 function switchPanel(panelId) {
   closeAllMenus();
   document.querySelectorAll(".menu button").forEach(b => b.classList.remove("active"));
@@ -422,11 +433,12 @@ function showMenu(input, key, all=false, onSelect=null) {
       if (onSelect) onSelect(item.dataset.v);
       if (input.id === "ratingInput") renderRatingQuick();
       if (input.id === "studentInput") renderStudentQuick();
+      if (["filterStudent","filterSkill","filterRating"].includes(input.id)) renderScores();
       closeAllMenus();
     });
   });
 }
-const acMap = { studentInput:"students", skillInput:"skills", ratingInput:"ratings", templateInput:"templates" };
+const acMap = { studentInput:"students", skillInput:"skills", ratingInput:"ratings", templateInput:"templates", filterStudent:"students", filterSkill:"skills", filterRating:"ratings" };
 Object.entries(acMap).forEach(([id,key]) => {
   const input = document.getElementById(id);
   input.setAttribute("autocomplete", "off");
@@ -663,8 +675,37 @@ function expandedScoreRows() {
   return out;
 }
 
+function normalizedFilterValue(id) {
+  const el = document.getElementById(id);
+  return el ? String(el.value || "").trim().toLowerCase() : "";
+}
+function textMatchesFilter(value, filter) {
+  if (!filter) return true;
+  const raw = String(value || "").toLowerCase();
+  return raw.includes(filter) || toHira(raw).includes(toHira(filter)) || kanaToRomaji(raw).includes(kanaToRomaji(filter));
+}
+function filteredExpandedScoreRows() {
+  const date = normalizedFilterValue("filterDate");
+  const testName = normalizedFilterValue("filterTestName");
+  const student = normalizedFilterValue("filterStudent");
+  const skill = normalizedFilterValue("filterSkill");
+  const rating = normalizedFilterValue("filterRating");
+  return expandedScoreRows().filter(r => {
+    if (date && r.date !== date) return false;
+    if (!textMatchesFilter(r.test_name, testName)) return false;
+    if (!textMatchesFilter(r.student, student)) return false;
+    if (!textMatchesFilter(r.skill, skill)) return false;
+    if (!textMatchesFilter(r.rating, rating)) return false;
+    return true;
+  });
+}
+function scoreCountText(rows) {
+  const scoreIds = new Set(rows.map(r => r.scoreIndex));
+  return `表示件数：${scoreIds.size}件 / 全${data.scores.length}件`;
+}
 function renderScores() {
-  const rows = expandedScoreRows().map(r => `<tr>
+  const filteredRows = filteredExpandedScoreRows();
+  const rows = filteredRows.map(r => `<tr>
     <td>${esc(r.no)}</td>
     <td>${esc(r.date)}</td>
     <td>${esc(r.test_name)}</td>
@@ -676,7 +717,23 @@ function renderScores() {
     <td>${esc(r.memo)}</td>
     <td>${r.pairIndex === 0 ? `<div class="row-actions"><button class="btn secondary" onclick="editScore(${r.scoreIndex})">編集</button><button class="btn danger" onclick="deleteScore(${r.scoreIndex})">削除</button></div>` : ""}</td>
   </tr>`).join("");
-  scoreTable.innerHTML = `<thead><tr><th>No</th><th>日付</th><th>テスト名</th><th>生徒氏名</th><th>技名</th><th>評価</th><th>部位</th><th>内容</th><th>メモ</th><th>操作</th></tr></thead><tbody>${rows}</tbody>`;
+  scoreTable.innerHTML = `<thead><tr><th>No</th><th>日付</th><th>テスト名</th><th>生徒氏名</th><th>技名</th><th>評価</th><th>部位</th><th>内容</th><th>メモ</th><th>操作</th></tr></thead><tbody>${rows || '<tr><td colspan="10">該当データなし</td></tr>'}</tbody>`;
+  const count = document.getElementById("scoreFilterCount");
+  if (count) count.textContent = scoreCountText(filteredRows);
+}
+function setupScoreFilters() {
+  ["filterDate","filterTestName","filterStudent","filterSkill","filterRating"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener("input", renderScores);
+  });
+  const clearBtn = document.getElementById("clearScoreFilters");
+  if (clearBtn) clearBtn.addEventListener("click", () => {
+    ["filterDate","filterTestName","filterStudent","filterSkill","filterRating"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = "";
+    });
+    renderScores();
+  });
 }
 downloadScores.addEventListener("click", () => {
   const rows = [["No","日付","テスト名","生徒氏名","技名","評価","部位","内容","自由メモ"],
@@ -839,6 +896,7 @@ function refreshAll() {
   renderCommentPairs();
 }
 setupAdminMode();
+setupScoreFilters();
 refreshAll();
 </script>
 </body>
