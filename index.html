@@ -24,8 +24,10 @@
     .panel { display:none; }
     .panel.active { display:block; }
     .admin-only { display:none !important; }
-    body.admin .admin-only { display:block !important; }
-    body.admin .menu button.admin-only { display:block !important; }
+    body.admin .menu button.admin-only,
+    body.admin .admin-nav-btn.admin-only,
+    body.admin #adminLogout.admin-only { display:block !important; }
+    body.admin .panel.admin-only.active { display:block !important; }
     .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:14px; }
     .grid { display:grid; gap:12px; }
     .cols { grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); }
@@ -99,12 +101,6 @@
 <main>
   <nav class="menu">
     <button class="active" data-panel="score">採点入力</button>
-    <button class="admin-only" data-panel="students">生徒マスタ</button>
-    <button class="admin-only" data-panel="ratings">評価基準マスタ</button>
-    <button class="admin-only" data-panel="skills">技名マスタ</button>
-    <button class="admin-only" data-panel="parts">部位マスタ</button>
-    <button class="admin-only" data-panel="contents">内容マスタ</button>
-    <button class="admin-only" data-panel="export">CSV出力</button>
     <button id="adminLogin" type="button">管理者</button>
   </nav>
 
@@ -158,6 +154,25 @@
     </div>
   </section>
 
+  <section id="adminHome" class="panel admin-only">
+    <div class="card">
+      <h2>管理者メニュー</h2>
+      <p class="hint">必要な画面のボタンを押してください。押した画面だけ表示します。</p>
+      <div class="menu">
+        <button class="admin-nav-btn admin-only" type="button" data-admin-panel="students">生徒マスタ</button>
+        <button class="admin-nav-btn admin-only" type="button" data-admin-panel="ratings">評価基準マスタ</button>
+        <button class="admin-nav-btn admin-only" type="button" data-admin-panel="skills">技名マスタ</button>
+        <button class="admin-nav-btn admin-only" type="button" data-admin-panel="parts">部位マスタ</button>
+        <button class="admin-nav-btn admin-only" type="button" data-admin-panel="contents">内容マスタ</button>
+        <button class="admin-nav-btn admin-only" type="button" data-admin-panel="export">CSV出力</button>
+      </div>
+      <div class="toolbar">
+        <button class="btn secondary" type="button" data-panel="score">採点入力に戻る</button>
+        <button class="btn danger admin-only" id="adminLogout" type="button">管理者モード終了</button>
+      </div>
+    </div>
+  </section>
+
   <section id="students" class="panel admin-only"></section>
   <section id="ratings" class="panel admin-only"></section>
   <section id="skills" class="panel admin-only"></section>
@@ -172,6 +187,7 @@
         <button class="btn" id="downloadScores">採点CSVを出力</button>
         <button class="btn secondary" id="downloadAllMasters">マスタCSVを一括出力</button>
         <button class="btn danger" id="resetAll">全データ削除</button>
+        <button class="btn secondary" type="button" data-panel="adminHome">管理者メニューに戻る</button>
       </div>
       <p class="hint">CSVはExcel / Googleスプレッドシートで開けます。マスタCSVには読み方・検索キーも含まれます。</p>
     </div>
@@ -193,7 +209,17 @@ const defaultData = {
 };
 let data = load();
 
-const ADMIN_CODE = "labyrinth2026";
+const ADMIN_CODE = "pp2026";
+function switchPanel(panelId) {
+  closeAllMenus();
+  document.querySelectorAll(".menu button").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+  const panel = document.getElementById(panelId);
+  if (panel) panel.classList.add("active");
+  const navBtn = document.querySelector(`.menu button[data-panel="${panelId}"]`);
+  if (navBtn) navBtn.classList.add("active");
+  window.scrollTo({top:0, behavior:"smooth"});
+}
 function enableAdmin() {
   document.body.classList.add("admin");
   sessionStorage.setItem("cheer_admin", "1");
@@ -201,23 +227,21 @@ function enableAdmin() {
 function disableAdmin() {
   document.body.classList.remove("admin");
   sessionStorage.removeItem("cheer_admin");
-  document.querySelectorAll(".menu button").forEach(b => b.classList.remove("active"));
-  document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-  document.querySelector('[data-panel="score"]').classList.add("active");
-  document.getElementById("score").classList.add("active");
+  switchPanel("score");
 }
 function setupAdminMode() {
   const url = new URL(location.href);
   if (url.searchParams.get("admin") === ADMIN_CODE || sessionStorage.getItem("cheer_admin") === "1") enableAdmin();
   document.getElementById("adminLogin").addEventListener("click", () => {
     if (document.body.classList.contains("admin")) {
-      if (confirm("管理者モードを終了しますか？")) disableAdmin();
+      switchPanel("adminHome");
       return;
     }
     const code = prompt("管理者パスコードを入力してください");
     if (code === ADMIN_CODE) {
       enableAdmin();
-      alert("管理者モードを表示しました。");
+      switchPanel("adminHome");
+      alert("管理者メニューを表示しました。");
     } else if (code !== null) {
       alert("パスコードが違います。");
     }
@@ -253,18 +277,24 @@ document.getElementById("testName").value = data.testName || "";
 document.getElementById("scoreDate").addEventListener("change", () => { data.currentDate = scoreDate.value; persist(); });
 document.getElementById("testName").addEventListener("input", () => { data.testName = testName.value; persist(); });
 
-document.querySelectorAll(".menu button").forEach(btn => {
+document.querySelectorAll("[data-panel]").forEach(btn => {
   btn.addEventListener("click", () => {
-    if (!btn.dataset.panel) return;
     if (btn.classList.contains("admin-only") && !document.body.classList.contains("admin")) return;
-    closeAllMenus();
-    document.querySelectorAll(".menu button").forEach(b => b.classList.remove("active"));
-    document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-    btn.classList.add("active");
-    document.getElementById(btn.dataset.panel).classList.add("active");
-    window.scrollTo({top:0, behavior:"smooth"});
+    switchPanel(btn.dataset.panel);
   });
 });
+document.querySelectorAll("[data-admin-panel]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    if (!document.body.classList.contains("admin")) return;
+    switchPanel(btn.dataset.adminPanel);
+  });
+});
+const adminLogoutBtn = document.getElementById("adminLogout");
+if (adminLogoutBtn) {
+  adminLogoutBtn.addEventListener("click", () => {
+    if (confirm("管理者モードを終了しますか？")) disableAdmin();
+  });
+}
 
 const kanaMap = {
   "きゃ":"kya","きゅ":"kyu","きょ":"kyo","しゃ":"sha","しゅ":"shu","しょ":"sho","しぇ":"she",
@@ -410,7 +440,7 @@ function renderMaster(sectionId,title,key,columns) {
   const sec = document.getElementById(sectionId);
   const inputs = columns.map(c => `<div><label>${esc(c.label)}</label><input id="${sectionId}_${c.key}" placeholder="${esc(c.placeholder)}"></div>`).join("");
   const rows = (data[key] || []).map((r,i) => `<tr>${columns.map(c=>`<td>${esc(r[c.key])}</td>`).join("")}<td class="row-actions"><button class="btn secondary" onclick="editMaster('${key}',${i})">編集</button><button class="btn danger" onclick="deleteMaster('${key}',${i})">削除</button></td></tr>`).join("");
-  sec.innerHTML = `<div class="card"><h2>${esc(title)}</h2><div class="grid cols">${inputs}</div><div class="toolbar"><button class="btn" onclick="addMaster('${sectionId}','${key}')">追加</button></div><p class="hint">名称・読み方・検索キーが検索対象です。</p></div><div class="card wide"><table><thead><tr>${columns.map(c=>`<th>${esc(c.label)}</th>`).join("")}<th>操作</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  sec.innerHTML = `<div class="card"><h2>${esc(title)}</h2><div class="grid cols">${inputs}</div><div class="toolbar"><button class="btn" onclick="addMaster('${sectionId}','${key}')">追加</button><button class="btn secondary" type="button" onclick="switchPanel('adminHome')">管理者メニューに戻る</button></div><p class="hint">名称・読み方・検索キーが検索対象です。</p></div><div class="card wide"><table><thead><tr>${columns.map(c=>`<th>${esc(c.label)}</th>`).join("")}<th>操作</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 window.addMaster = function(sectionId,key) {
   const row = {};
