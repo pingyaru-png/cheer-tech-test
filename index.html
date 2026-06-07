@@ -32,8 +32,12 @@
     label { display:block; margin:10px 0 5px; font-size:13px; color:var(--muted); font-weight:700; }
     input, textarea, button { font:inherit; }
     input, textarea {
-      width:100%; padding:12px; border:1px solid var(--line); border-radius:12px; background:#fff; font-size:16px;
+      display:block; width:100%; max-width:100%; min-width:0; padding:12px; border:1px solid var(--line); border-radius:12px; background:#fff; font-size:16px;
     }
+    input[type="date"] {
+      -webkit-appearance:none; appearance:none; min-width:0; max-width:100%; text-align:left;
+    }
+    .grid > div { min-width:0; }
     textarea { min-height:84px; }
     .btn { border:1px solid var(--accent); background:var(--accent); color:#fff; border-radius:12px; padding:12px 16px; font-weight:800; cursor:pointer; }
     .btn.secondary { background:#fff; color:var(--ink); border-color:var(--line); }
@@ -115,9 +119,9 @@
 
     <div class="card">
       <h2>採点入力</h2>
-      <p class="hint">頭文字（ひらがな／英字）で検索　▼で全件表示</p>
+      <p class="hint">頭文字入力（ひらがな／英字）で検索</p>
       <div class="warning">必須項目：テスト日・生徒氏名・技名・評価。テスト名は一度入力すると次の採点にも保持されます。マスタ外の値は登録できません。同じ日の同じ生徒・同じ技名は1回だけ登録できます。</div>
-      <p class="hint">通常画面ではマスタ編集は表示されません。管理者のみ変更できます。</p>
+      <p class="hint">通常画面ではマスタ編集CSV出力は表示されません。管理者のみ変更できます。</p>
       <label>生徒ワンタップ選択</label>
       <div class="quick-box" id="studentQuickBox"></div>
       <div class="toolbar">
