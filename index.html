@@ -197,7 +197,7 @@
 <script>
 const LS_KEY = "cheer_tech_test_v8";
 const defaultData = {
-  masterVersion: "20260607_masters_csv2",
+  masterVersion: "20260607_masters_csv3_contents_fix",
   students: [{"name": "はるか", "grade": "6", "reading": "はるか", "search_key": "haruka h"}, {"name": "りの", "grade": "6", "reading": "りの", "search_key": "rino r"}, {"name": "まお", "grade": "6", "reading": "まお", "search_key": "mao m"}, {"name": "あやな", "grade": "6", "reading": "あやな", "search_key": "ayana a"}, {"name": "ゆめな", "grade": "5", "reading": "ゆめな", "search_key": "yumena y"}, {"name": "もも", "grade": "5", "reading": "もも", "search_key": "momo m"}, {"name": "ゆいか", "grade": "5", "reading": "ゆいか", "search_key": "yuika y"}, {"name": "かほ", "grade": "4", "reading": "かほ", "search_key": "kaho k"}, {"name": "しおり", "grade": "4", "reading": "しおり", "search_key": "shiori s"}, {"name": "あづみ", "grade": "4", "reading": "あづみ", "search_key": "azumi a"}, {"name": "めい", "grade": "4", "reading": "めい", "search_key": "mei m"}, {"name": "いちか", "grade": "4", "reading": "いちか", "search_key": "ichika i"}, {"name": "りこ", "grade": "4", "reading": "りこ", "search_key": "riko r"}, {"name": "つむぎ", "grade": "4", "reading": "つむぎ", "search_key": "tsumugi t"}, {"name": "しゅり", "grade": "4", "reading": "しゅり", "search_key": "shuri s"}, {"name": "とうわ", "grade": "3", "reading": "とうわ", "search_key": "touwa t"}, {"name": "りほこ", "grade": "2", "reading": "りほこ", "search_key": "rihoko r"}],
   ratings: [{"name": "A+", "reading": "えーぷらす", "search_key": "aplus a+"}, {"name": "A", "reading": "えー", "search_key": "a"}, {"name": "A-", "reading": "えーまいなす", "search_key": "aminus a-"}, {"name": "B+", "reading": "びーぷらす", "search_key": "bplus b+"}, {"name": "B", "reading": "びー", "search_key": "b"}, {"name": "B-", "reading": "びーまいなす", "search_key": "bminus b-"}, {"name": "C+", "reading": "しーぷらす", "search_key": "cplus c+"}, {"name": "C", "reading": "しー", "search_key": "c"}, {"name": "C-", "reading": "しーまいなす", "search_key": "cminus c-"}, {"name": "D+", "reading": "でぃーぷらす", "search_key": "dplus d+"}, {"name": "D", "reading": "でぃー", "search_key": "d"}, {"name": "D-", "reading": "でぃーまいなす", "search_key": "dminus d-"}],
   skills: [{"name": "キック", "reading": "きっく", "search_key": "kikku k kick"}, {"name": "シェネ", "reading": "しぇね", "search_key": "shene s"}, {"name": "ピケ", "reading": "ぴけ", "search_key": "pike p"}, {"name": "ピルエット", "reading": "ぴるえっと", "search_key": "piruetto p pirouette"}, {"name": "クッペターン", "reading": "くっぺたーん", "search_key": "kuppetan k"}, {"name": "フライアウェイ", "reading": "ふらいあうぇい", "search_key": "furaiauei f flyaway"}, {"name": "トゥータッチ", "reading": "とぅーたっち", "search_key": "tutacchi t toe touch toetouch"}, {"name": "ハードラー", "reading": "はーどらー", "search_key": "hadora h"}, {"name": "ジュッテ", "reading": "じゅって", "search_key": "jutte j"}, {"name": "セカンド", "reading": "せかんど", "search_key": "sekando s"}, {"name": "シェネセカ", "reading": "しぇねせか", "search_key": "sheneseka s"}, {"name": "側転", "reading": "そくてん", "search_key": "sokuten s"}, {"name": "フェッテ", "reading": "ふぇって", "search_key": "fette f fouette"}, {"name": "イリュージョン", "reading": "いりゅーじょん", "search_key": "iryujon i illusion"}, {"name": "Y字ターン", "reading": "わいじたーん", "search_key": "waijitan w yturn y"}, {"name": "Cジャン", "reading": "しーじゃん", "search_key": "shijan s cjan c"}],
@@ -250,6 +250,31 @@ function setupAdminMode() {
 }
 
 
+
+function normalizeMasterData(saved) {
+  const latestContents = {
+    "反る": {reading:"そる", search_key:"soru sr"},
+    "硬い": {reading:"かたい", search_key:"katai kt"},
+    "スポット": {reading:"すぽっと", search_key:"supoto sp"},
+    "るるべ": {reading:"るるべ", search_key:"rurube rr"},
+    "フラ付き": {reading:"ふらつき", search_key:"furatuki fr"},
+    "フラ付いてる": {name:"フラ付き", reading:"ふらつき", search_key:"furatuki fr"},
+    "アーム弱い": {reading:"あーむよわい", search_key:"amuyowai am"}
+  };
+  if (Array.isArray(saved.contents)) {
+    saved.contents = saved.contents.map(row => {
+      const patch = latestContents[row.name];
+      if (!patch) return row;
+      return {...row, ...patch};
+    });
+    const names = saved.contents.map(x => x.name);
+    defaultData.contents.forEach(row => {
+      if (!names.includes(row.name)) saved.contents.push(structuredClone(row));
+    });
+  }
+  return saved;
+}
+
 function load() {
   try {
     const saved = JSON.parse(localStorage.getItem(LS_KEY));
@@ -262,6 +287,8 @@ function load() {
       saved.masterVersion = defaultData.masterVersion;
       localStorage.setItem(LS_KEY, JSON.stringify(saved));
     }
+    normalizeMasterData(saved);
+    localStorage.setItem(LS_KEY, JSON.stringify(saved));
     return saved;
   } catch { return structuredClone(defaultData); }
 }
