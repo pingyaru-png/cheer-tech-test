@@ -149,22 +149,22 @@
     </div>
 
     <div class="card wide">
-      <h2>採点一覧</h2>
+      <h2>採点結果一覧</h2>
       <p class="hint" id="scoreFilterCount">表示件数：0件</p>
       <table id="scoreTable"></table>
       <div style="margin-top:16px; padding-top:14px; border-top:1px solid var(--line);">
-        <h2>採点一覧の絞り込み</h2>
-        <p class="hint">一覧確認後、必要に応じて日付・テスト名・生徒氏名・技名・評価で絞り込みできます。</p>
+        <h2>採点結果の絞込み</h2>
+        <p class="hint">日付・テスト名・生徒氏名・技名・評価で絞込みできます。</p>
         <div class="grid cols">
-          <div><label>日付で絞り込み</label><input id="filterDate" type="date"></div>
-          <div><label>テスト名で絞り込み</label><input id="filterTestName" placeholder="例：6月"></div>
-          <div><label>生徒氏名で絞り込み</label><div class="ac-wrap"><input id="filterStudent" placeholder="例：とうわ"><button class="drop-btn" data-target="filterStudent" type="button">▼</button></div></div>
-          <div><label>技名で絞り込み</label><div class="ac-wrap"><input id="filterSkill" placeholder="例：側転"><button class="drop-btn" data-target="filterSkill" type="button">▼</button></div></div>
-          <div><label>評価で絞り込み</label><div class="ac-wrap"><input id="filterRating" placeholder="例：B+"><button class="drop-btn" data-target="filterRating" type="button">▼</button></div></div>
+          <div><label>日付で絞込み</label><input id="filterDate" type="date"></div>
+          <div><label>テスト名で絞込み</label><input id="filterTestName" placeholder="例：6月"></div>
+          <div><label>生徒氏名で絞込み</label><div class="ac-wrap"><input id="filterStudent" placeholder="例：とうわ"><button class="drop-btn" data-target="filterStudent" type="button">▼</button></div></div>
+          <div><label>技名で絞込み</label><div class="ac-wrap"><input id="filterSkill" placeholder="例：側転"><button class="drop-btn" data-target="filterSkill" type="button">▼</button></div></div>
+          <div><label>評価で絞込み</label><div class="ac-wrap"><input id="filterRating" placeholder="例：B+"><button class="drop-btn" data-target="filterRating" type="button">▼</button></div></div>
         </div>
         <div class="toolbar">
-          <button class="btn secondary" id="clearScoreFilters" type="button">絞り込みクリア</button>
-          <button class="btn" id="downloadScores" type="button">採点CSVを出力</button>
+          <button class="btn secondary" id="clearScoreFilters" type="button">絞込みクリア</button>
+          <button class="btn" id="downloadScores" type="button">採点結果CSVを出力</button>
         </div>
       </div>
     </div>
@@ -200,7 +200,7 @@
         <button class="btn danger" id="resetAll" type="button">全データ削除</button>
         <button class="btn secondary" type="button" data-panel="adminHome">管理者メニューに戻る</button>
       </div>
-      <p class="hint">マスタCSVには読み方・検索キーも含まれます。採点CSVは採点一覧下の「採点CSVを出力」から出力してください。</p>
+      <p class="hint">マスタCSVには読み方・検索キーも含まれます。採点CSVは採点一覧下の「採点結果CSVを出力」から出力してください。</p>
     </div>
   </section>
 </main>
@@ -743,7 +743,7 @@ function setupScoreFilters() {
   });
 }
 downloadScores.addEventListener("click", () => {
-  if (!confirm("今回のテスト採点は完了しています。採点データを出力しますか？")) return;
+  if (!confirm("今回のテスト採点は完了しています。採点結果データを出力しますか？")) return;
   const rows = [["No","日付","テスト名","生徒氏名","技名","評価","部位","内容","自由メモ"],
     ...expandedScoreRows().map(r => [r.no,r.date,r.test_name,r.student,r.skill,r.rating,r.part,r.comment,r.memo])];
   downloadCSV("technique_test_scores.csv", rows);
