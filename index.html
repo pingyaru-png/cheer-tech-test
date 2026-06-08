@@ -173,7 +173,7 @@
   <section id="adminHome" class="panel admin-only">
     <div class="card">
       <h2>管理者メニュー</h2>
-      <p class="hint">必要な画面のボタンを押してください。押した画面だけ表示します。</p>
+      <p class="hint">必要な画面のボタンを押してください。押した画面だけ表示します。採点入力へ戻ると管理者モードは自動でロックされます。</p>
       <div class="menu">
         <button class="admin-nav-btn admin-only" type="button" data-admin-panel="students">生徒マスタ</button>
         <button class="admin-nav-btn admin-only" type="button" data-admin-panel="ratings">評価基準マスタ</button>
@@ -181,10 +181,6 @@
         <button class="admin-nav-btn admin-only" type="button" data-admin-panel="parts">部位マスタ</button>
         <button class="admin-nav-btn admin-only" type="button" data-admin-panel="contents">内容マスタ</button>
         <button class="admin-nav-btn admin-only" type="button" data-admin-panel="export">マスタCSV出力・全データ削除</button>
-      </div>
-      <div class="toolbar">
-        <button class="btn secondary" type="button" data-panel="score">採点入力に戻る</button>
-        <button class="btn danger admin-only" id="adminLogout" type="button">管理者モード終了</button>
       </div>
     </div>
   </section>
@@ -228,6 +224,10 @@ let data = load();
 const ADMIN_CODE = "2026";
 function switchPanel(panelId) {
   closeAllMenus();
+  if (panelId === "score" && document.body.classList.contains("admin")) {
+    document.body.classList.remove("admin");
+    sessionStorage.removeItem("cheer_admin");
+  }
   document.querySelectorAll(".menu button").forEach(b => b.classList.remove("active"));
   document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
   const panel = document.getElementById(panelId);
@@ -343,13 +343,6 @@ document.querySelectorAll("[data-admin-panel]").forEach(btn => {
     switchPanel(btn.dataset.adminPanel);
   });
 });
-const adminLogoutBtn = document.getElementById("adminLogout");
-if (adminLogoutBtn) {
-  adminLogoutBtn.addEventListener("click", () => {
-    if (confirm("管理者モードを終了しますか？")) disableAdmin();
-  });
-}
-
 const kanaMap = {
   "きゃ":"kya","きゅ":"kyu","きょ":"kyo","しゃ":"sha","しゅ":"shu","しょ":"sho","しぇ":"she",
   "ちゃ":"cha","ちゅ":"chu","ちょ":"cho","ちぇ":"che","にゃ":"nya","にゅ":"nyu","にょ":"nyo",
