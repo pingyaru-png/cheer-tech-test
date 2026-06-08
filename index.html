@@ -180,7 +180,7 @@
         <button class="admin-nav-btn admin-only" type="button" data-admin-panel="skills">技名マスタ</button>
         <button class="admin-nav-btn admin-only" type="button" data-admin-panel="parts">部位マスタ</button>
         <button class="admin-nav-btn admin-only" type="button" data-admin-panel="contents">内容マスタ</button>
-        <button class="admin-nav-btn admin-only" type="button" data-admin-panel="export">マスタCSV出力・全データ削除</button>
+        <button class="admin-nav-btn admin-only" type="button" data-admin-panel="export">マスタCSV出力・採点全データ削除</button>
       </div>
     </div>
   </section>
@@ -194,10 +194,10 @@
 
   <section id="export" class="panel admin-only">
     <div class="card">
-      <h2>マスタCSV出力・全データ削除</h2>
+      <h2>マスタCSV出力・採点全データ削除</h2>
       <div class="toolbar">
         <button class="btn secondary" id="downloadAllMasters" type="button">マスタCSVを一括出力</button>
-        <button class="btn danger" id="resetAll" type="button">全データ削除</button>
+        <button class="btn danger" id="resetAll" type="button">採点全データ削除</button>
         <button class="btn secondary" type="button" data-panel="adminHome">管理者メニューに戻る</button>
       </div>
       <p class="hint">マスタCSVには読み方・検索キーも含まれます。採点CSVは採点一覧下の「採点結果CSVを出力」から出力してください。</p>
@@ -758,15 +758,15 @@ downloadAllMasters.addEventListener("click", () => {
   downloadCSV("technique_test_masters_v8.csv", rows);
 });
 resetAll.addEventListener("click", () => {
-  if (!confirm("全データを初期状態に戻しますか？\nこの操作は元に戻せません。")) return;
-  const code = prompt("全データ削除を実行するには、管理者パスコードを入力してください");
+  if (!confirm("採点全データを初期状態に戻しますか？\nこの操作は元に戻せません。")) return;
+  const code = prompt("採点全データ削除を実行するには、管理者パスコードを入力してください");
   if (code === null) return;
   if (code !== ADMIN_CODE) {
-    alert("管理者パスコードが違います。全データ削除を中止しました。");
+    alert("管理者パスコードが違います。採点全データ削除を中止しました。");
     return;
   }
   localStorage.removeItem(LS_KEY);
-  alert("全データを削除しました。初期状態に戻します。");
+  alert("採点全データを削除しました。初期状態に戻します。");
   location.reload();
 });
 
