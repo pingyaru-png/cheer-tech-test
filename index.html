@@ -117,7 +117,7 @@
       <h2>採点入力</h2>
       <p class="hint">頭文字入力（ひらがな／英字）で検索</p>
       <div class="warning">必須項目：テスト日・生徒氏名・技名・評価。テスト名は一度入力すると次の採点にも保持されます。マスタ外の値は登録できません。同じ日の同じ生徒・同じ技名は1回だけ登録できます。</div>
-      <p class="hint">通常画面ではマスタ編集CSV出力は表示されません。管理者のみ変更できます。</p>
+      <p class="hint">通常画面ではマスタ編集・マスタCSV出力は表示されません。管理者のみ変更できます。</p>
       <label>生徒ワンタップ選択</label>
       <div class="quick-box" id="studentQuickBox"></div>
       <div class="toolbar">
@@ -164,6 +164,7 @@
         </div>
         <div class="toolbar">
           <button class="btn secondary" id="clearScoreFilters" type="button">絞り込みクリア</button>
+          <button class="btn" id="downloadScores" type="button">採点CSVを出力</button>
         </div>
       </div>
     </div>
@@ -179,7 +180,7 @@
         <button class="admin-nav-btn admin-only" type="button" data-admin-panel="skills">技名マスタ</button>
         <button class="admin-nav-btn admin-only" type="button" data-admin-panel="parts">部位マスタ</button>
         <button class="admin-nav-btn admin-only" type="button" data-admin-panel="contents">内容マスタ</button>
-        <button class="admin-nav-btn admin-only" type="button" data-admin-panel="export">CSV出力</button>
+        <button class="admin-nav-btn admin-only" type="button" data-admin-panel="export">マスタCSV出力・全データ削除</button>
       </div>
       <div class="toolbar">
         <button class="btn secondary" type="button" data-panel="score">採点入力に戻る</button>
@@ -197,14 +198,13 @@
 
   <section id="export" class="panel admin-only">
     <div class="card">
-      <h2>CSV出力</h2>
+      <h2>マスタCSV出力・全データ削除</h2>
       <div class="toolbar">
-        <button class="btn" id="downloadScores">採点CSVを出力</button>
-        <button class="btn secondary" id="downloadAllMasters">マスタCSVを一括出力</button>
-        <button class="btn danger" id="resetAll">全データ削除</button>
+        <button class="btn secondary" id="downloadAllMasters" type="button">マスタCSVを一括出力</button>
+        <button class="btn danger" id="resetAll" type="button">全データ削除</button>
         <button class="btn secondary" type="button" data-panel="adminHome">管理者メニューに戻る</button>
       </div>
-      <p class="hint">CSVはExcel / Googleスプレッドシートで開けます。マスタCSVには読み方・検索キーも含まれます。</p>
+      <p class="hint">マスタCSVには読み方・検索キーも含まれます。採点CSVは採点一覧下の「採点CSVを出力」から出力してください。</p>
     </div>
   </section>
 </main>
@@ -746,6 +746,7 @@ function setupScoreFilters() {
   });
 }
 downloadScores.addEventListener("click", () => {
+  if (!confirm("今回のテスト採点は完了しています。採点データを出力しますか？")) return;
   const rows = [["No","日付","テスト名","生徒氏名","技名","評価","部位","内容","自由メモ"],
     ...expandedScoreRows().map(r => [r.no,r.date,r.test_name,r.student,r.skill,r.rating,r.part,r.comment,r.memo])];
   downloadCSV("technique_test_scores.csv", rows);
