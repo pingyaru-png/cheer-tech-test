@@ -116,7 +116,7 @@
     <div class="card">
       <h2>採点入力</h2>
       <p class="hint">頭文字入力（ひらがな／英字）で検索</p>
-      <div class="warning">必須項目：テスト日・生徒氏名・技名・評価。テスト名は一度入力すると次の採点にも保持されます。マスタ外の値は登録できません。同じ日の同じ生徒・同じ技名は1回だけ登録できます。</div>
+      <div class="warning">必須項目：テスト日・生徒氏名・技名・評価。テスト名・技名は一度入力すると次の採点にも保持されます。全員の採点が終わったら、技名を手動で次の技名に変更してください。マスタ外の値は登録できません。同じ日の同じ生徒・同じ技名は1回だけ登録できます。</div>
       <p class="hint">採点入力画面ではマスタ編集・マスタCSV出力は表示されません。管理者のみ変更できます。</p>
       <label>生徒ワンタップ選択</label>
       <div class="quick-box" id="studentQuickBox"></div>
@@ -153,18 +153,18 @@
       <p class="hint" id="scoreFilterCount">表示件数：0件</p>
       <table id="scoreTable"></table>
       <div style="margin-top:16px; padding-top:14px; border-top:1px solid var(--line);">
-        <h2>採点結果の絞込み</h2>
-        <p class="hint">日付・テスト名・生徒氏名・技名・評価で絞込みできます。</p>
+        <h2>採点結果の絞り込み</h2>
+        <p class="hint">一覧確認後、必要に応じて日付・テスト名・生徒氏名・技名・評価で絞り込みできます。</p>
         <div class="grid cols">
-          <div><label>日付で絞込み</label><input id="filterDate" type="date"></div>
-          <div><label>テスト名で絞込み</label><input id="filterTestName" placeholder="例：6月"></div>
-          <div><label>生徒氏名で絞込み</label><div class="ac-wrap"><input id="filterStudent" placeholder="例：とうわ"><button class="drop-btn" data-target="filterStudent" type="button">▼</button></div></div>
-          <div><label>技名で絞込み</label><div class="ac-wrap"><input id="filterSkill" placeholder="例：側転"><button class="drop-btn" data-target="filterSkill" type="button">▼</button></div></div>
-          <div><label>評価で絞込み</label><div class="ac-wrap"><input id="filterRating" placeholder="例：B+"><button class="drop-btn" data-target="filterRating" type="button">▼</button></div></div>
+          <div><label>日付で絞り込み</label><input id="filterDate" type="date"></div>
+          <div><label>テスト名で絞り込み</label><input id="filterTestName" placeholder="例：6月"></div>
+          <div><label>生徒氏名で絞り込み</label><div class="ac-wrap"><input id="filterStudent" placeholder="例：とうわ"><button class="drop-btn" data-target="filterStudent" type="button">▼</button></div></div>
+          <div><label>技名で絞り込み</label><div class="ac-wrap"><input id="filterSkill" placeholder="例：側転"><button class="drop-btn" data-target="filterSkill" type="button">▼</button></div></div>
+          <div><label>評価で絞り込み</label><div class="ac-wrap"><input id="filterRating" placeholder="例：B+"><button class="drop-btn" data-target="filterRating" type="button">▼</button></div></div>
         </div>
         <div class="toolbar">
-          <button class="btn secondary" id="clearScoreFilters" type="button">絞込みクリア</button>
-          <button class="btn" id="downloadScores" type="button">採点結果CSVを出力</button>
+          <button class="btn secondary" id="clearScoreFilters" type="button">絞り込みクリア</button>
+          <button class="btn" id="downloadScores" type="button">採点CSVを出力</button>
         </div>
       </div>
     </div>
@@ -200,7 +200,7 @@
         <button class="btn danger" id="resetAll" type="button">採点全データ削除</button>
         <button class="btn secondary" type="button" data-panel="adminHome">管理者メニューに戻る</button>
       </div>
-      <p class="hint">マスタCSVには読み方・検索キーも含まれます。採点CSVは採点一覧下の「採点結果CSVを出力」から出力してください。</p>
+      <p class="hint">マスタCSVには読み方・検索キーも含まれます。採点CSVは採点結果一覧下の「採点CSVを出力」から出力してください。</p>
     </div>
   </section>
 </main>
@@ -217,6 +217,7 @@ const defaultData = {
   templates: [{"name": "膝を伸ばし、つま先まで意識する", "reading": "ひざをのばしつまさきまでいしきする", "search_key": "hiza nobasu tsumasaki h n t"}],
   currentDate: "",
   testName: "",
+  currentSkill: "",
   scores: []
 };
 let data = load();
@@ -328,8 +329,10 @@ function downloadCSV(filename, rows) {
 
 document.getElementById("scoreDate").value = data.currentDate || today();
 document.getElementById("testName").value = data.testName || "";
+document.getElementById("skillInput").value = data.currentSkill || "";
 document.getElementById("scoreDate").addEventListener("change", () => { data.currentDate = scoreDate.value; persist(); });
 document.getElementById("testName").addEventListener("input", () => { data.testName = testName.value; persist(); });
+document.getElementById("skillInput").addEventListener("input", () => { data.currentSkill = skillInput.value.trim(); persist(); });
 
 document.querySelectorAll("[data-panel]").forEach(btn => {
   btn.addEventListener("click", () => {
@@ -546,11 +549,13 @@ document.getElementById("addScore").addEventListener("click", () => {
   const nextStudentName = nextStudentAfter(row.student);
   data.currentDate = row.date;
   data.testName = row.test_name;
+  data.currentSkill = row.skill;
   data.scores.push(row); save();
   scoreDate.value = data.currentDate || today();
   testName.value = data.testName || "";
+  skillInput.value = data.currentSkill || "";
   studentInput.value = nextStudentName;
-  ["skillInput","ratingInput","templateInput","memoInput"].forEach(id => document.getElementById(id).value = "");
+  ["ratingInput","templateInput","memoInput"].forEach(id => document.getElementById(id).value = "");
   commentPairsArr = [{part:"", contents:[]}];
   renderCommentPairs();
   renderStudentQuick();
@@ -559,12 +564,15 @@ document.getElementById("addScore").addEventListener("click", () => {
 document.getElementById("clearScoreForm").addEventListener("click", () => {
   const keepDate = scoreDate.value;
   const keepTestName = testName.value;
+  const keepSkill = skillInput.value;
   data.currentDate = keepDate;
   data.testName = keepTestName;
+  data.currentSkill = keepSkill.trim();
   persist();
-  ["studentInput","skillInput","ratingInput","templateInput","memoInput"].forEach(id => document.getElementById(id).value = "");
+  ["studentInput","ratingInput","templateInput","memoInput"].forEach(id => document.getElementById(id).value = "");
   scoreDate.value = keepDate;
   testName.value = keepTestName;
+  skillInput.value = keepSkill;
   commentPairsArr = [{part:"", contents:[]}];
   renderCommentPairs();
   renderStudentQuick();
@@ -640,8 +648,10 @@ window.editScore = function(i) {
   data.scores[i] = updated;
   data.currentDate = updated.date;
   data.testName = updated.test_name;
+  data.currentSkill = updated.skill;
   scoreDate.value = data.currentDate || today();
   testName.value = data.testName || "";
+  skillInput.value = data.currentSkill || "";
   save();
 }
 window.deleteScore = function(i) { if(confirm("削除しますか？")) { data.scores.splice(i,1); save(); } }
@@ -743,7 +753,7 @@ function setupScoreFilters() {
   });
 }
 downloadScores.addEventListener("click", () => {
-  if (!confirm("今回のテスト採点は完了しています。採点結果データを出力しますか？")) return;
+  if (!confirm("今回のテスト採点は完了しています。採点データを出力しますか？")) return;
   const rows = [["No","日付","テスト名","生徒氏名","技名","評価","部位","内容","自由メモ"],
     ...expandedScoreRows().map(r => [r.no,r.date,r.test_name,r.student,r.skill,r.rating,r.part,r.comment,r.memo])];
   downloadCSV("technique_test_scores.csv", rows);
@@ -758,7 +768,7 @@ downloadAllMasters.addEventListener("click", () => {
   downloadCSV("technique_test_masters_v8.csv", rows);
 });
 resetAll.addEventListener("click", () => {
-  if (!confirm("採点全データを初期状態に戻しますか？\nこの操作は元に戻せません。")) return;
+  if (!confirm("全データを初期状態に戻しますか？\nこの操作は元に戻せません。")) return;
   const code = prompt("採点全データ削除を実行するには、管理者パスコードを入力してください");
   if (code === null) return;
   if (code !== ADMIN_CODE) {
@@ -766,7 +776,7 @@ resetAll.addEventListener("click", () => {
     return;
   }
   localStorage.removeItem(LS_KEY);
-  alert("採点全データを削除しました。初期状態に戻します。");
+  alert("全データを削除しました。初期状態に戻します。");
   location.reload();
 });
 
