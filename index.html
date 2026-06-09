@@ -55,7 +55,7 @@
     .th-pair-pill { display:inline-flex; align-items:center; justify-content:center; gap:8px; background:#e0f2fe; border:1px solid #bae6fd; color:#075985; border-radius:999px; padding:4px 12px; height:32px; line-height:1; font-weight:900; white-space:nowrap; min-width:116px; box-sizing:border-box; }
     .pair-head-cell { text-align:center; min-width:170px; padding-top:8px; padding-bottom:8px; padding-left:0; padding-right:0; }
     .wide { overflow-x:auto; -webkit-overflow-scrolling:touch; }
-    table { width:100%; min-width:1060px; border-collapse:collapse; background:#fff; table-layout:fixed; }
+    table { width:100%; min-width:1120px; border-collapse:collapse; background:#fff; table-layout:fixed; }
     th,td { border-bottom:1px solid var(--line); padding:10px 12px; text-align:left; font-size:14px; vertical-align:middle; }
     th { background:#f3f4f6; white-space:nowrap; vertical-align:middle; }
     #scoreTable thead th { text-align:left; }
@@ -63,12 +63,12 @@
     #scoreTable tbody td:nth-child(2),
     #scoreTable tbody td:nth-child(3),
     #scoreTable tbody td:nth-child(4),
-    #scoreTable tbody td:nth-child(5),
     #scoreTable tbody td:nth-child(6),
     #scoreTable tbody td:nth-child(7),
     #scoreTable tbody td:nth-child(10) { white-space:nowrap; }
+    #scoreTable tbody td:nth-child(5),
     #scoreTable tbody td:nth-child(8),
-    #scoreTable tbody td:nth-child(9) { word-break:break-word; }
+    #scoreTable tbody td:nth-child(9) { word-break:break-word; overflow-wrap:anywhere; white-space:normal; }
     #scoreTable tbody td:nth-child(7) { padding-right:2px; }
     #scoreTable tbody td:nth-child(8) { padding-left:2px; }
     .row-actions { display:flex; gap:6px; justify-content:center; }
@@ -107,6 +107,45 @@
       border-radius:999px; padding:7px 10px; font-size:14px;
     }
     .chip button { border:0; background:transparent; color:var(--danger); padding:0; cursor:pointer; font-weight:900; }
+
+
+    /* 採点系の主要ボタンを紫に統一 */
+    .menu button[data-panel="score"].active,
+    #addScore,
+    #downloadScores {
+      background:#7c3aed;
+      border-color:#7c3aed;
+      color:#fff;
+    }
+    .menu button[data-panel="score"].active:hover,
+    #addScore:hover,
+    #downloadScores:hover {
+      background:#6d28d9;
+      border-color:#6d28d9;
+    }
+
+
+    /* 生徒ワンタップ選択：紫の楕円・パフォーマンス風 */
+    #studentQuickBox .quick-btn {
+      border:2px solid #a855f7;
+      background:linear-gradient(180deg,#ffffff 0%, #faf5ff 100%);
+      color:#4c1d95;
+      border-radius:999px;
+      font-weight:900;
+      box-shadow:0 3px 0 #ddd6fe, 0 8px 18px rgba(168,85,247,.16);
+      transition:transform .08s ease, box-shadow .08s ease, background .12s ease;
+    }
+    #studentQuickBox .quick-btn:hover {
+      background:linear-gradient(180deg,#f5f3ff 0%, #ede9fe 100%);
+      transform:translateY(-1px);
+      box-shadow:0 4px 0 #c4b5fd, 0 10px 20px rgba(168,85,247,.22);
+    }
+    #studentQuickBox .quick-btn.active {
+      background:linear-gradient(180deg,#a855f7 0%, #7c3aed 100%);
+      color:#fff;
+      border-color:#7c3aed;
+      box-shadow:0 3px 0 #5b21b6, 0 10px 22px rgba(124,58,237,.35);
+    }
 
     @media (min-width:800px) {
       .menu { grid-template-columns:repeat(4,1fr); }
@@ -752,7 +791,7 @@ function renderScores() {
     <td>${esc(r.memo)}</td>
     <td>${r.pairIndex === 0 ? `<div class="row-actions"><button class="btn secondary" onclick="editScore(${r.scoreIndex})">編集</button><button class="btn danger" onclick="deleteScore(${r.scoreIndex})">削除</button></div>` : ""}</td>
   </tr>`).join("");
-  scoreTable.innerHTML = `<colgroup><col style="width:56px"><col style="width:110px"><col style="width:130px"><col style="width:110px"><col style="width:90px"><col style="width:90px"><col style="width:82px"><col style="width:156px"><col style="width:120px"><col style="width:94px"></colgroup><thead><tr><th>No</th><th>日付</th><th>テスト名</th><th>生徒氏名</th><th>技名</th><th>評価</th><th colspan="2" class="pair-head-cell"><span class="th-pair-pill"><span>部位</span><span>内容</span></span></th><th>メモ</th><th>操作</th></tr></thead><tbody>${rows || '<tr><td colspan="10">該当データなし</td></tr>'}</tbody>`;
+  scoreTable.innerHTML = `<colgroup><col style="width:56px"><col style="width:110px"><col style="width:130px"><col style="width:110px"><col style="width:150px"><col style="width:76px"><col style="width:82px"><col style="width:156px"><col style="width:120px"><col style="width:94px"></colgroup><thead><tr><th>No</th><th>日付</th><th>テスト名</th><th>生徒氏名</th><th>技名</th><th>評価</th><th colspan="2" class="pair-head-cell"><span class="th-pair-pill"><span>部位</span><span>内容</span></span></th><th>メモ</th><th>操作</th></tr></thead><tbody>${rows || '<tr><td colspan="10">該当データなし</td></tr>'}</tbody>`;
   const count = document.getElementById("scoreFilterCount");
   if (count) count.textContent = scoreCountText(filteredRows);
 }
