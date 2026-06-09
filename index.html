@@ -49,10 +49,12 @@
     .hint { color:var(--muted); font-size:13px; line-height:1.6; }
 
     .warning { background:#fff7ed; border:1px solid #fed7aa; color:#9a3412; border-radius:12px; padding:10px; font-size:13px; line-height:1.5; }
+    .th-pair-pill { display:inline-flex; align-items:center; justify-content:center; gap:14px; background:#e0f2fe; border:1px solid #bae6fd; color:#075985; border-radius:999px; padding:4px 14px; height:32px; line-height:1; font-weight:900; white-space:nowrap; min-width:128px; box-sizing:border-box; }
+    .pair-head-cell { text-align:center; min-width:190px; padding-top:8px; padding-bottom:8px; }
     .wide { overflow-x:auto; }
     table { width:100%; border-collapse:collapse; background:#fff; }
     th,td { border-bottom:1px solid var(--line); padding:8px; text-align:left; font-size:14px; vertical-align:top; }
-    th { background:#f3f4f6; white-space:nowrap; }
+    th { background:#f3f4f6; white-space:nowrap; vertical-align:middle; }
     .row-actions { display:flex; gap:6px; }
     .row-actions .btn { padding:6px 8px; font-size:12px; }
     .ac-wrap { position:relative; display:flex; gap:6px; }
@@ -116,7 +118,7 @@
     <div class="card">
       <h2>採点入力</h2>
       <p class="hint">頭文字入力（ひらがな／英字）で検索</p>
-      <div class="warning">必須項目：テスト日・生徒氏名・技名・評価。テスト名・技名は一度入力すると次の採点にも保持されます。マスタ外の値は登録できません。同じ日の同じ生徒・同じ技名は1回だけ登録できます。</div>
+      <div class="warning">必須項目：テスト日・生徒氏名・技名・評価。<br>テスト名・技名は一度入力すると次の採点にも保持されます。<br>マスタ外の値は登録できません。<br>同じ日の同じ生徒・同じ技名は1回だけ登録できます。</div>
       <p class="hint">採点入力画面ではマスタ編集・マスタCSV出力は表示されません。管理者のみ変更できます。</p>
       <label>生徒ワンタップ選択</label>
       <div class="quick-box" id="studentQuickBox"></div>
@@ -734,7 +736,7 @@ function renderScores() {
     <td>${esc(r.memo)}</td>
     <td>${r.pairIndex === 0 ? `<div class="row-actions"><button class="btn secondary" onclick="editScore(${r.scoreIndex})">編集</button><button class="btn danger" onclick="deleteScore(${r.scoreIndex})">削除</button></div>` : ""}</td>
   </tr>`).join("");
-  scoreTable.innerHTML = `<thead><tr><th>No</th><th>日付</th><th>テスト名</th><th>生徒氏名</th><th>技名</th><th>評価</th><th>部位</th><th>内容</th><th>メモ</th><th>操作</th></tr></thead><tbody>${rows || '<tr><td colspan="10">該当データなし</td></tr>'}</tbody>`;
+  scoreTable.innerHTML = `<thead><tr><th>No</th><th>日付</th><th>テスト名</th><th>生徒氏名</th><th>技名</th><th>評価</th><th colspan="2" class="pair-head-cell"><span class="th-pair-pill"><span>部位</span><span>内容</span></span></th><th>メモ</th><th>操作</th></tr></thead><tbody>${rows || '<tr><td colspan="10">該当データなし</td></tr>'}</tbody>`;
   const count = document.getElementById("scoreFilterCount");
   if (count) count.textContent = scoreCountText(filteredRows);
 }
