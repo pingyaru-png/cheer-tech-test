@@ -61,11 +61,11 @@
     #scoreTable thead th { text-align:left; }
     #scoreTable tbody td:nth-child(1),
     #scoreTable tbody td:nth-child(2),
-    #scoreTable tbody td:nth-child(3),
     #scoreTable tbody td:nth-child(4),
     #scoreTable tbody td:nth-child(6),
     #scoreTable tbody td:nth-child(7),
     #scoreTable tbody td:nth-child(10) { white-space:nowrap; }
+    #scoreTable tbody td:nth-child(3),
     #scoreTable tbody td:nth-child(5),
     #scoreTable tbody td:nth-child(8),
     #scoreTable tbody td:nth-child(9) { word-break:break-word; overflow-wrap:anywhere; white-space:normal; }
@@ -791,7 +791,7 @@ function renderScores() {
     <td>${esc(r.memo)}</td>
     <td>${r.pairIndex === 0 ? `<div class="row-actions"><button class="btn secondary" onclick="editScore(${r.scoreIndex})">編集</button><button class="btn danger" onclick="deleteScore(${r.scoreIndex})">削除</button></div>` : ""}</td>
   </tr>`).join("");
-  scoreTable.innerHTML = `<colgroup><col style="width:56px"><col style="width:110px"><col style="width:130px"><col style="width:110px"><col style="width:150px"><col style="width:76px"><col style="width:82px"><col style="width:156px"><col style="width:120px"><col style="width:94px"></colgroup><thead><tr><th>No</th><th>日付</th><th>テスト名</th><th>生徒氏名</th><th>技名</th><th>評価</th><th colspan="2" class="pair-head-cell"><span class="th-pair-pill"><span>部位</span><span>内容</span></span></th><th>メモ</th><th>操作</th></tr></thead><tbody>${rows || '<tr><td colspan="10">該当データなし</td></tr>'}</tbody>`;
+  scoreTable.innerHTML = `<colgroup><col style="width:56px"><col style="width:110px"><col style="width:170px"><col style="width:110px"><col style="width:150px"><col style="width:76px"><col style="width:82px"><col style="width:156px"><col style="width:120px"><col style="width:94px"></colgroup><thead><tr><th>No</th><th>日付</th><th>テスト名</th><th>生徒氏名</th><th>技名</th><th>評価</th><th colspan="2" class="pair-head-cell"><span class="th-pair-pill"><span>部位</span><span>内容</span></span></th><th>メモ</th><th>操作</th></tr></thead><tbody>${rows || '<tr><td colspan="10">該当データなし</td></tr>'}</tbody>`;
   const count = document.getElementById("scoreFilterCount");
   if (count) count.textContent = scoreCountText(filteredRows);
 }
