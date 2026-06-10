@@ -304,6 +304,23 @@
       line-height:1.75;
     }
 
+
+    #scoreTable th.sortable {
+      cursor:pointer;
+      user-select:none;
+      color:#374151;
+      position:relative;
+    }
+    #scoreTable th.sortable:hover {
+      background:#ede9fe;
+      color:#5b21b6;
+    }
+    #scoreTable th.sortable .sort-mark {
+      margin-left:4px;
+      font-size:11px;
+      color:#7c3aed;
+    }
+
     @media (min-width:800px) {
       .menu { grid-template-columns:repeat(4,1fr); }
       .menu button { font-size:16px; padding:14px; }
@@ -915,9 +932,51 @@ function scoreCountText(rows) {
   const scoreIds = new Set(rows.map(r => r.scoreIndex));
   return `表示件数：${scoreIds.size}件 / 全${data.scores.length}件`;
 }
+let scoreSort = { key: "no", dir: "asc" };
+
+
+function ratingOrderValue(value) {
+  const order = {"A+":1,"A":2,"A-":3,"B+":4,"B":5,"B-":6,"C+":7,"C":8,"C-":9,"D+":10,"D":11,"D-":12};
+  return order[String(value || "").trim()] || 999;
+}
+function scoreSortValue(row, key) {
+  if (key === "no") return row.no;
+  if (key === "date") return row.date || "";
+  if (key === "test_name") return row.test_name || "";
+  if (key === "student") return row.student || "";
+  if (key === "skill") return row.skill || "";
+  if (key === "rating") return ratingOrderValue(row.rating);
+  return "";
+}
+function applyScoreSort(rows) {
+  const key = scoreSort.key;
+  const dir = scoreSort.dir === "desc" ? -1 : 1;
+  return [...rows].sort((a,b) => {
+    const av = scoreSortValue(a, key);
+    const bv = scoreSortValue(b, key);
+    if (typeof av === "number" && typeof bv === "number") return (av - bv) * dir;
+    return String(av).localeCompare(String(bv), "ja", {numeric:true, sensitivity:"base"}) * dir;
+  });
+}
+function sortHeader(label, key) {
+  const active = scoreSort.key === key;
+  const mark = active ? (scoreSort.dir === "asc" ? "▲" : "▼") : "↕";
+  return `<th class="sortable" data-sort="${key}" onclick="setScoreSort('${key}')">${label}<span class="sort-mark">${mark}</span></th>`;
+}
+window.setScoreSort = function(key) {
+  if (scoreSort.key === key) {
+    scoreSort.dir = scoreSort.dir === "asc" ? "desc" : "asc";
+  } else {
+    scoreSort.key = key;
+    scoreSort.dir = "asc";
+  }
+  renderScores();
+}
+
 function renderScores() {
   const filteredRows = filteredExpandedScoreRows();
-  const rows = filteredRows.map(r => `<tr>
+  const sortedRows = applyScoreSort(filteredRows);
+  const rows = sortedRows.map(r => `<tr>
     <td>${esc(r.no)}</td>
     <td>${esc(r.date)}</td>
     <td>${esc(r.test_name)}</td>
@@ -927,7 +986,7 @@ function renderScores() {
     <td>${esc(r.memo)}</td>
     <td><div class="row-actions"><button class="btn secondary" onclick="editScore(${r.scoreIndex})">編集</button><button class="btn danger" onclick="deleteScore(${r.scoreIndex})">削除</button></div></td>
   </tr>`).join("");
-  scoreTable.innerHTML = `<colgroup><col style="width:56px"><col style="width:110px"><col style="width:170px"><col style="width:110px"><col style="width:150px"><col style="width:76px"><col style="width:160px"><col style="width:94px"></colgroup><thead><tr><th>No</th><th>日付</th><th>テスト名</th><th>生徒氏名</th><th>技名</th><th>評価</th><th>メモ</th><th>操作</th></tr></thead><tbody>${rows || '<tr><td colspan="8">該当データなし</td></tr>'}</tbody>`;
+  scoreTable.innerHTML = `<colgroup><col style="width:56px"><col style="width:110px"><col style="width:170px"><col style="width:110px"><col style="width:150px"><col style="width:76px"><col style="width:160px"><col style="width:94px"></colgroup><thead><tr>${sortHeader("No","no")}${sortHeader("日付","date")}${sortHeader("テスト名","test_name")}${sortHeader("生徒氏名","student")}${sortHeader("技名","skill")}${sortHeader("評価","rating")}<th>メモ</th><th>操作</th></tr></thead><tbody>${rows || '<tr><td colspan="8">該当データなし</td></tr>'}</tbody>`;
   const count = document.getElementById("scoreFilterCount");
   if (count) count.textContent = scoreCountText(filteredRows);
 }
