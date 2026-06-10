@@ -144,6 +144,7 @@
     }
 
 
+    /* 技名ワンタップ選択：生徒氏名ボタンと呼応する紫パフォーマンス風 */
     #skillQuickBox .quick-btn.skill {
       width:74px;
       min-width:74px;
@@ -154,11 +155,102 @@
       justify-content:center;
       white-space:normal;
       overflow-wrap:anywhere;
-      word-break:break-word;
-      line-height:1.08;
-      font-size:clamp(10px, 2.5vw, 14px);
+      word-break:keep-all;
+      line-height:1.1;
+      font-size:17px;
+      font-weight:900;
       padding:6px 8px;
       text-align:center;
+      color:#4c1d95;
+      border:2px solid #a855f7;
+      background:linear-gradient(180deg,#ffffff 0%, #faf5ff 100%);
+      box-shadow:0 3px 0 #ddd6fe, 0 8px 18px rgba(168,85,247,.16);
+      transition:transform .08s ease, box-shadow .08s ease, background .12s ease, color .12s ease;
+    }
+    #skillQuickBox .quick-btn.skill:hover {
+      background:linear-gradient(180deg,#f5f3ff 0%, #ede9fe 100%);
+      transform:translateY(-1px);
+      box-shadow:0 4px 0 #c4b5fd, 0 10px 20px rgba(168,85,247,.22);
+    }
+    #skillQuickBox .quick-btn.skill.active {
+      background:linear-gradient(180deg,#a855f7 0%, #7c3aed 100%);
+      color:#fff;
+      border-color:#7c3aed;
+      box-shadow:0 3px 0 #5b21b6, 0 10px 22px rgba(124,58,237,.35);
+      outline:3px solid rgba(124,58,237,.16);
+      outline-offset:2px;
+    }
+    #skillQuickBox .quick-btn.skill.long {
+      font-size:13px;
+      line-height:1.08;
+      word-break:break-word;
+    }
+
+
+    /* 評価：未選択は白背景＋色枠＋色文字、選択中は色背景＋白文字 */
+    .rating-badge,
+    #ratingQuickBox .quick-btn.grade {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:58px;
+      min-height:44px;
+      border-radius:999px;
+      font-weight:900;
+      border:2px solid currentColor;
+      background:#fff;
+      box-shadow:0 3px 0 rgba(15,23,42,.08), 0 8px 18px rgba(15,23,42,.08);
+      transition:transform .08s ease, box-shadow .08s ease, background .12s ease, color .12s ease;
+    }
+    #ratingQuickBox .quick-btn.grade:hover {
+      transform:translateY(-1px);
+      box-shadow:0 4px 0 rgba(15,23,42,.10), 0 10px 20px rgba(15,23,42,.14);
+    }
+    .rating-badge {
+      min-width:48px;
+      min-height:30px;
+      padding:4px 12px;
+      font-size:14px;
+      box-shadow:none;
+    }
+
+    .rating-Ap, #ratingQuickBox .quick-btn.grade.rating-Ap { color:#5b21b6; border-color:#5b21b6; }
+    .rating-A,  #ratingQuickBox .quick-btn.grade.rating-A  { color:#7c3aed; border-color:#7c3aed; }
+    .rating-Am, #ratingQuickBox .quick-btn.grade.rating-Am { color:#8b5cf6; border-color:#8b5cf6; }
+
+    .rating-Bp, #ratingQuickBox .quick-btn.grade.rating-Bp { color:#1d4ed8; border-color:#1d4ed8; }
+    .rating-B,  #ratingQuickBox .quick-btn.grade.rating-B  { color:#2563eb; border-color:#2563eb; }
+    .rating-Bm, #ratingQuickBox .quick-btn.grade.rating-Bm { color:#60a5fa; border-color:#60a5fa; }
+
+    .rating-Cp, #ratingQuickBox .quick-btn.grade.rating-Cp { color:#d97706; border-color:#d97706; }
+    .rating-C,  #ratingQuickBox .quick-btn.grade.rating-C  { color:#f59e0b; border-color:#f59e0b; }
+    .rating-Cm, #ratingQuickBox .quick-btn.grade.rating-Cm { color:#eab308; border-color:#eab308; }
+
+    .rating-Dp, #ratingQuickBox .quick-btn.grade.rating-Dp { color:#dc2626; border-color:#dc2626; }
+    .rating-D,  #ratingQuickBox .quick-btn.grade.rating-D  { color:#ef4444; border-color:#ef4444; }
+    .rating-Dm, #ratingQuickBox .quick-btn.grade.rating-Dm { color:#f87171; border-color:#f87171; }
+
+    #ratingQuickBox .quick-btn.grade.rating-Ap.active { background:#5b21b6; border-color:#5b21b6; color:#fff; }
+    #ratingQuickBox .quick-btn.grade.rating-A.active  { background:#7c3aed; border-color:#7c3aed; color:#fff; }
+    #ratingQuickBox .quick-btn.grade.rating-Am.active { background:#8b5cf6; border-color:#8b5cf6; color:#fff; }
+
+    #ratingQuickBox .quick-btn.grade.rating-Bp.active { background:#1d4ed8; border-color:#1d4ed8; color:#fff; }
+    #ratingQuickBox .quick-btn.grade.rating-B.active  { background:#2563eb; border-color:#2563eb; color:#fff; }
+    #ratingQuickBox .quick-btn.grade.rating-Bm.active { background:#60a5fa; border-color:#60a5fa; color:#fff; }
+
+    #ratingQuickBox .quick-btn.grade.rating-Cp.active { background:#d97706; border-color:#d97706; color:#fff; }
+    #ratingQuickBox .quick-btn.grade.rating-C.active  { background:#f59e0b; border-color:#f59e0b; color:#fff; }
+    #ratingQuickBox .quick-btn.grade.rating-Cm.active { background:#eab308; border-color:#eab308; color:#fff; }
+
+    #ratingQuickBox .quick-btn.grade.rating-Dp.active { background:#dc2626; border-color:#dc2626; color:#fff; }
+    #ratingQuickBox .quick-btn.grade.rating-D.active  { background:#ef4444; border-color:#ef4444; color:#fff; }
+    #ratingQuickBox .quick-btn.grade.rating-Dm.active { background:#f87171; border-color:#f87171; color:#fff; }
+
+    #ratingQuickBox .quick-btn.grade.active {
+      transform:translateY(1px);
+      box-shadow:inset 0 2px 5px rgba(0,0,0,.20), 0 0 0 3px rgba(124,58,237,.12);
+      outline:3px solid rgba(124,58,237,.16);
+      outline-offset:2px;
     }
 
     @media (min-width:800px) {
@@ -754,7 +846,7 @@ function renderScores() {
     <td>${esc(r.test_name)}</td>
     <td>${esc(r.student)}</td>
     <td>${esc(r.skill)}</td>
-    <td>${esc(r.rating)}</td>
+    <td>${ratingBadge(r.rating)}</td>
     <td>${esc(r.memo)}</td>
     <td><div class="row-actions"><button class="btn secondary" onclick="editScore(${r.scoreIndex})">編集</button><button class="btn danger" onclick="deleteScore(${r.scoreIndex})">削除</button></div></td>
   </tr>`).join("");
@@ -837,10 +929,25 @@ function renderStudentQuick() {
 function renderSkillQuick() {
   const box = document.getElementById("skillQuickBox");
   if (!box) return;
-  box.innerHTML = data.skills.map(s => `<button type="button" class="quick-btn skill ${s.name === skillInput.value.trim() ? 'active' : ''}" onclick="skillInput.value='${esc(s.name)}'; data.currentSkill=skillInput.value.trim(); persist(); renderSkillQuick();">${esc(s.name)}</button>`).join("");
+  box.innerHTML = data.skills.map(s => {
+    const isLong = String(s.name || "").length >= 5;
+    return `<button type="button" class="quick-btn skill ${isLong ? 'long' : ''} ${s.name === skillInput.value.trim() ? 'active' : ''}" onclick="skillInput.value='${esc(s.name)}'; data.currentSkill=skillInput.value.trim(); persist(); renderSkillQuick();">${esc(s.name)}</button>`;
+  }).join("");
+}
+function ratingClass(value) {
+  const v = String(value || "").trim();
+  return {
+    "A+": "rating-Ap", "A": "rating-A", "A-": "rating-Am",
+    "B+": "rating-Bp", "B": "rating-B", "B-": "rating-Bm",
+    "C+": "rating-Cp", "C": "rating-C", "C-": "rating-Cm",
+    "D+": "rating-Dp", "D": "rating-D", "D-": "rating-Dm"
+  }[v] || "";
+}
+function ratingBadge(value) {
+  return `<span class="rating-badge ${ratingClass(value)}">${esc(value)}</span>`;
 }
 function renderRatingQuick() {
-  ratingQuickBox.innerHTML = data.ratings.map(r => `<button type="button" class="quick-btn grade ${r.name === ratingInput.value.trim() ? 'active' : ''}" onclick="ratingInput.value='${esc(r.name)}'; renderRatingQuick();">${esc(r.name)}</button>`).join("");
+  ratingQuickBox.innerHTML = data.ratings.map(r => `<button type="button" class="quick-btn grade ${ratingClass(r.name)} ${r.name === ratingInput.value.trim() ? 'active' : ''}" onclick="ratingInput.value='${esc(r.name)}'; renderRatingQuick();">${esc(r.name)}</button>`).join("");
 }
 function addPair() {
   commentPairsArr.push({part:"", contents:[]});
