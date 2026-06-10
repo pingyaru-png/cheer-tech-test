@@ -253,6 +253,57 @@
       outline-offset:2px;
     }
 
+
+    .input-tip-wrap {
+      margin:10px 0 14px;
+    }
+    .input-tip-toggle {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border:1px solid #5eead4;
+      background:#ecfeff;
+      color:#0f766e;
+      font-size:12px;
+      font-weight:900;
+      cursor:pointer;
+      padding:5px 10px;
+      border-radius:999px;
+      box-shadow:0 2px 0 #99f6e4;
+    }
+    .input-tip-toggle:hover {
+      background:#ccfbf1;
+      transform:translateY(-1px);
+      box-shadow:0 3px 0 #5eead4;
+    }
+    .input-tip-note {
+      display:none;
+      margin-top:8px;
+      max-width:760px;
+      background:#f0fdfa;
+      border:1px solid #5eead4;
+      border-left:6px solid #14b8a6;
+      border-radius:14px;
+      padding:14px 16px;
+      box-shadow:0 8px 20px rgba(15,118,110,.14);
+      color:#134e4a;
+      transform:rotate(-.3deg);
+    }
+    .input-tip-note.show {
+      display:block;
+    }
+    .input-tip-note h3 {
+      margin:0 0 8px;
+      font-size:15px;
+      color:#0f766e;
+    }
+    .input-tip-note ul {
+      margin:0;
+      padding-left:1.2em;
+      font-size:13px;
+      line-height:1.75;
+    }
+
     @media (min-width:800px) {
       .menu { grid-template-columns:repeat(4,1fr); }
       .menu button { font-size:16px; padding:14px; }
@@ -280,6 +331,22 @@
       <h2>採点入力</h2>
       <p class="hint">頭文字入力（ひらがな／英字）で検索</p>
       <div class="warning">・必須項目：テスト日・生徒氏名・技名・評価。<br>・同じ日・同じ生徒・同じ技名は1回のみ登録可。</div>
+      <div class="input-tip-wrap">
+        <button class="input-tip-toggle" id="inputTipToggle" type="button" aria-expanded="false">💡Tips入力便利</button>
+        <div class="input-tip-note" id="inputTipNote">
+          <h3>💡Tips入力便利</h3>
+          <ul>
+            <li>テスト日とテスト名は、一度入力すると次の採点にも保持されます。</li>
+            <li>生徒氏名・技名・評価は、ワンタップ選択、リスト選択、頭文字・連想入力ができます。</li>
+            <li>採点を追加すると、生徒氏名は登録順に次の生徒へ自動で切り替わります。技名は保持されます。</li>
+            <li>自由メモは必要な場合のみ入力してください。</li>
+            <li>入力欄クリアを押すと、生徒氏名・技名・評価・自由メモが空欄になります。テスト日とテスト名は保持されます。</li>
+            <li>同じ日・同じ生徒・同じ技名は1回のみ登録できます。</li>
+            <li>絞り込み検索をしている場合でも、CSV出力では採点データ全件が出力されます。</li>
+          </ul>
+        </div>
+      </div>
+
       <p class="hint">採点入力画面ではマスタ編集・マスタCSV出力は表示されません。管理者のみ変更できます。</p>
       <label>生徒ワンタップ選択</label>
       <div class="quick-box" id="studentQuickBox"></div>
@@ -488,6 +555,17 @@ document.getElementById("skillInput").value = data.currentSkill || "";
 document.getElementById("scoreDate").addEventListener("change", () => { data.currentDate = scoreDate.value; persist(); });
 document.getElementById("testName").addEventListener("input", () => { data.testName = testName.value; persist(); });
 document.getElementById("skillInput").addEventListener("input", () => { data.currentSkill = skillInput.value.trim(); persist(); renderSkillQuick(); });
+
+
+const inputTipToggle = document.getElementById("inputTipToggle");
+const inputTipNote = document.getElementById("inputTipNote");
+if (inputTipToggle && inputTipNote) {
+  inputTipToggle.addEventListener("click", () => {
+    const show = !inputTipNote.classList.contains("show");
+    inputTipNote.classList.toggle("show", show);
+    inputTipToggle.setAttribute("aria-expanded", String(show));
+  });
+}
 
 document.querySelectorAll("[data-panel]").forEach(btn => {
   btn.addEventListener("click", () => {
