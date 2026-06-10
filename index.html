@@ -360,6 +360,7 @@
             <li>「入力欄クリア」を押すと、生徒氏名、技名、評価、自由メモが空欄になります。テスト日とテスト名は保持されます。</li>
             <li>同じ日・同じ生徒・同じ技名は、1回のみ登録できます。重複入力ミスを防げます。</li>
             <li>絞り込み検索をしている場合でも、CSV出力では採点データ全件が出力されます。</li>
+            <li>採点結果一覧は、見出しをクリックすると並び替えできます。</li>
             <li>マスタ編集およびマスタCSV出力は、管理者のみ操作できます。</li>
           </ul>
         </div>
@@ -939,12 +940,18 @@ function ratingOrderValue(value) {
   const order = {"A+":1,"A":2,"A-":3,"B+":4,"B":5,"B-":6,"C+":7,"C":8,"C-":9,"D+":10,"D":11,"D-":12};
   return order[String(value || "").trim()] || 999;
 }
+function masterOrderValue(type, value) {
+  const v = String(value || "").trim();
+  const list = data[type] || [];
+  const idx = list.findIndex(item => String(item.name || "").trim() === v);
+  return idx >= 0 ? idx : 999999;
+}
 function scoreSortValue(row, key) {
   if (key === "no") return row.no;
   if (key === "date") return row.date || "";
   if (key === "test_name") return row.test_name || "";
-  if (key === "student") return row.student || "";
-  if (key === "skill") return row.skill || "";
+  if (key === "student") return masterOrderValue("students", row.student);
+  if (key === "skill") return masterOrderValue("skills", row.skill);
   if (key === "rating") return ratingOrderValue(row.rating);
   return "";
 }
