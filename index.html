@@ -933,7 +933,7 @@ function scoreCountText(rows) {
   const scoreIds = new Set(rows.map(r => r.scoreIndex));
   return `表示件数：${scoreIds.size}件 / 全${data.scores.length}件`;
 }
-let scoreSort = { key: "no", dir: "asc" };
+let scoreSort = { key: "no", dir: "desc" };
 
 
 function ratingOrderValue(value) {
