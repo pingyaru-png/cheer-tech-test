@@ -143,6 +143,24 @@
       box-shadow:0 3px 0 #5b21b6, 0 10px 22px rgba(124,58,237,.35);
     }
 
+
+    #skillQuickBox .quick-btn.skill {
+      width:74px;
+      min-width:74px;
+      height:48px;
+      min-height:48px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      white-space:normal;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+      line-height:1.08;
+      font-size:clamp(10px, 2.5vw, 14px);
+      padding:6px 8px;
+      text-align:center;
+    }
+
     @media (min-width:800px) {
       .menu { grid-template-columns:repeat(4,1fr); }
       .menu button { font-size:16px; padding:14px; }
@@ -180,7 +198,7 @@
 
       <div class="grid cols">
         <div><label>生徒氏名 ★必須</label><div class="ac-wrap"><input id="studentInput" placeholder="例：と / t / touwa"><button class="drop-btn" data-target="studentInput">▼</button></div></div>
-        <div><label>技名 ★必須</label><div class="ac-wrap"><input id="skillInput" placeholder="例：そ / s / sokuten"><button class="drop-btn" data-target="skillInput">▼</button></div></div>
+        <div><label>技名 ★必須</label><div class="ac-wrap"><input id="skillInput" placeholder="例：そ / s / sokuten"><button class="drop-btn" data-target="skillInput">▼</button></div><div class="quick-box" id="skillQuickBox"></div></div>
         <div><label>評価 ★必須</label><div class="ac-wrap"><input id="ratingInput" placeholder="例：B+"><button class="drop-btn" data-target="ratingInput">▼</button></div><div class="quick-box" id="ratingQuickBox"></div></div>
 </div>
       
@@ -377,7 +395,7 @@ document.getElementById("testName").value = data.testName || "";
 document.getElementById("skillInput").value = data.currentSkill || "";
 document.getElementById("scoreDate").addEventListener("change", () => { data.currentDate = scoreDate.value; persist(); });
 document.getElementById("testName").addEventListener("input", () => { data.testName = testName.value; persist(); });
-document.getElementById("skillInput").addEventListener("input", () => { data.currentSkill = skillInput.value.trim(); persist(); });
+document.getElementById("skillInput").addEventListener("input", () => { data.currentSkill = skillInput.value.trim(); persist(); renderSkillQuick(); });
 
 document.querySelectorAll("[data-panel]").forEach(btn => {
   btn.addEventListener("click", () => {
@@ -481,6 +499,7 @@ function showMenu(input, key, all=false, onSelect=null) {
       input.value = item.dataset.v;
       if (onSelect) onSelect(item.dataset.v);
       if (input.id === "ratingInput") renderRatingQuick();
+      if (input.id === "skillInput") renderSkillQuick();
       if (input.id === "studentInput") renderStudentQuick();
       if (["filterStudent","filterSkill","filterRating"].includes(input.id)) renderScores();
       closeAllMenus();
@@ -587,6 +606,7 @@ document.getElementById("addScore").addEventListener("click", () => {
   studentInput.value = nextStudentName;
   ["ratingInput","templateInput","memoInput"].forEach(id => document.getElementById(id).value = "");
   renderStudentQuick();
+  renderSkillQuick();
   renderRatingQuick();
 });
 document.getElementById("clearScoreForm").addEventListener("click", () => {
@@ -602,6 +622,7 @@ document.getElementById("clearScoreForm").addEventListener("click", () => {
   testName.value = keepTestName;
   skillInput.value = keepSkill;
   renderStudentQuick();
+  renderSkillQuick();
   renderRatingQuick();
 });
 function extractPartsFromContentText(text) {
@@ -813,6 +834,11 @@ function renderStudentQuick() {
   const current = studentInput.value.trim();
   studentQuickBox.innerHTML = data.students.map(s => `<button type="button" class="quick-btn ${s.name === current ? 'active' : ''}" onclick="setStudent('${esc(s.name)}')">${esc(s.name)}</button>`).join("");
 }
+function renderSkillQuick() {
+  const box = document.getElementById("skillQuickBox");
+  if (!box) return;
+  box.innerHTML = data.skills.map(s => `<button type="button" class="quick-btn skill ${s.name === skillInput.value.trim() ? 'active' : ''}" onclick="skillInput.value='${esc(s.name)}'; data.currentSkill=skillInput.value.trim(); persist(); renderSkillQuick();">${esc(s.name)}</button>`).join("");
+}
 function renderRatingQuick() {
   ratingQuickBox.innerHTML = data.ratings.map(r => `<button type="button" class="quick-btn grade ${r.name === ratingInput.value.trim() ? 'active' : ''}" onclick="ratingInput.value='${esc(r.name)}'; renderRatingQuick();">${esc(r.name)}</button>`).join("");
 }
@@ -907,6 +933,7 @@ function refreshAll() {
   Object.entries(masterDefs).forEach(([key,def]) => renderMaster(def.section,def.title,key,def.columns));
   renderScores();
   renderStudentQuick();
+  renderSkillQuick();
   renderRatingQuick();
 }
 setupAdminMode();
