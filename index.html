@@ -704,15 +704,13 @@ document.getElementById("addScore").addEventListener("click", () => {
 document.getElementById("clearScoreForm").addEventListener("click", () => {
   const keepDate = scoreDate.value;
   const keepTestName = testName.value;
-  const keepSkill = skillInput.value;
   data.currentDate = keepDate;
   data.testName = keepTestName;
-  data.currentSkill = keepSkill.trim();
+  data.currentSkill = "";
   persist();
-  ["studentInput","ratingInput","templateInput","memoInput"].forEach(id => document.getElementById(id).value = "");
+  ["studentInput","skillInput","ratingInput","templateInput","memoInput"].forEach(id => document.getElementById(id).value = "");
   scoreDate.value = keepDate;
   testName.value = keepTestName;
-  skillInput.value = keepSkill;
   renderStudentQuick();
   renderSkillQuick();
   renderRatingQuick();
